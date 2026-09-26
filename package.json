@@ -1,0 +1,28 @@
+{
+  "name": "pawns-legend",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A Zelda-style 3D adventure where you collect chess pieces and duel bosses at the board.",
+  "type": "module",
+  "license": "GPL-3.0-or-later",
+  "scripts": {
+    "dev": "vite --host",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host",
+    "typecheck": "tsc --noEmit",
+    "check:data": "node scripts/check-data.mjs"
+  },
+  "dependencies": {
+    "chess.js": "^1.4.0",
+    "chessground": "^9.2.1",
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.0",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.0"
+  },
+  "overrides": {
+    "rolldown": "1.2.9"
+  }
+}

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#1c1438" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="description" content="A Zelda-style chess adventure: explore 3D realms, collect chess pieces, and checkmate bosses." />
+    <title>Pawn's Legend</title>
+    <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="./icon-192.png" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <div id="scene"></div>
+    <div id="controls" class="hidden">
+      <div class="stick"><div class="stick-knob"></div></div>
+      <button class="pad-btn btn-b" type="button" aria-label="Leap">B</button>
+      <button class="pad-btn btn-a" type="button" aria-label="Act">A</button>
+    </div>
+    <div id="ui"></div>
+    <div id="fade"></div>
+    <div id="boot">Setting up the board…</div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
