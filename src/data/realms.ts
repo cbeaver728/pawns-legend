@@ -162,7 +162,7 @@ function merge(...rooms: { walls: WallDef[]; doors: DoorDef[] }[]) {
 // The Grand Board — hub
 
 const hubRooms = merge(
-  room('hub_vault', 22, 22, 9, 9, { door: 'w', opens: { puzzle: 'ladder' }, name: 'The Ladder Vault' }),
+  room('hub_vault', 22, 22, 9, 9, { door: 'w', opens: { puzzle: 'deflection' }, name: 'The Sacrifice Vault' }),
 );
 
 const HUB: RealmDef = {
@@ -185,7 +185,7 @@ const HUB: RealmDef = {
   ],
   signs: [
     { x: 4, z: 16, text: 'THE GRAND BOARD — Each gate is sealed by a piece. Win a Knight to pass the Desert gate, a Bishop for the Ice, a Rook for the Stars, a Queen for the Throne.' },
-    { x: 16, z: 26, text: 'THE LADDER VAULT — Solve the puzzle on the door and its treasure is yours.' },
+    { x: 16, z: 26, text: 'THE SACRIFICE VAULT — Solve the puzzle on the door and its treasure is yours. Fair warning: the door fights back.' },
   ],
   npcs: [
     {
@@ -217,7 +217,7 @@ const HUB: RealmDef = {
 // Emerald Ranks — meadow. Pawn sentries, a hedge maze hall, the Horse Demigod.
 
 const meadowRooms = merge(
-  room('meadow_hall', -24, -4, 14, 12, { door: 'e', opens: { puzzle: 'backrank' }, name: 'Hedge Hall', style: 'hedge', height: 2.8 }),
+  room('meadow_hall', -24, -4, 14, 12, { door: 'e', opens: { puzzle: 'philidor' }, name: 'Hedge Hall', style: 'hedge', height: 2.8 }),
   room('meadow_arena', 0, -36, 22, 16, { door: 's', opens: { defeat: ['meadow_pip', 'meadow_tobble'] }, name: 'Arena Gate' }),
   // A low hedge garden with no door at all: only a leaping Knight gets in.
   room('meadow_garden', 30, -14, 8, 8, { style: 'hedge', height: 1.0 }),
@@ -279,7 +279,7 @@ const MEADOW: RealmDef = {
 // Sunscorched Diagonals — desert. Needs a Knight.
 
 const desertRooms = merge(
-  room('desert_tomb', 26, -12, 14, 12, { door: 'w', opens: { puzzle: 'arabian' }, name: 'Tomb of Diagonals' }),
+  room('desert_tomb', 26, -12, 14, 12, { door: 'w', opens: { puzzle: 'boden' }, name: 'Tomb of Diagonals' }),
   room('desert_arena', 0, -38, 22, 16, { door: 's', opens: { defeat: ['desert_khepri', 'desert_imset'] }, name: 'Temple Gate' }),
 );
 
@@ -334,7 +334,7 @@ const DESERT: RealmDef = {
 // Frostspire Keep — ice. Needs a Bishop.
 
 const iceRooms = merge(
-  room('ice_vault', -26, -10, 12, 12, { door: 'e', opens: { puzzle: 'corridor' }, name: 'The Frozen Corridor' }),
+  room('ice_vault', -26, -10, 12, 12, { door: 'e', opens: { puzzle: 'lolli' }, name: 'The Frozen Corridor' }),
   room('ice_arena', 0, -38, 22, 16, { door: 's', opens: { defeat: ['ice_brisk', 'ice_vesk'] }, name: 'Keep Gate' }),
 );
 
@@ -388,8 +388,8 @@ const ICE: RealmDef = {
 // The Starlit Court — court. Needs a Rook.
 
 const courtRooms = merge(
-  room('court_hall', 26, -12, 12, 12, { door: 'w', opens: { puzzle: 'scholar' }, name: "Scholar's Door" }),
-  room('court_mirror', -28, -14, 10, 10, { door: 'e', opens: { puzzle: 'mirror' }, name: 'The Mirror Vault' }),
+  room('court_hall', 26, -12, 12, 12, { door: 'w', opens: { puzzle: 'anastasia' }, name: "Scholar's Door" }),
+  room('court_mirror', -28, -14, 10, 10, { door: 'e', opens: { puzzle: 'pillsbury' }, name: 'The Mirror Vault' }),
   room('court_arena', 0, -38, 22, 16, { door: 's', opens: { defeat: ['court_veil', 'court_astra'] }, name: 'Throne of Stars' }),
 );
 
@@ -447,7 +447,7 @@ const COURT: RealmDef = {
 // The Obsidian Throne — final realm. Needs a Queen.
 
 const throneRooms = merge(
-  room('throne_vault', 24, -4, 12, 12, { door: 'w', opens: { puzzle: 'bishops' }, name: 'Vault of Crossed Diagonals' }),
+  room('throne_vault', 24, -4, 12, 12, { door: 'w', opens: { puzzle: 'damiano' }, name: 'The Black Vault' }),
   room('throne_arena', 0, -30, 26, 18, { door: 's', opens: { defeat: ['throne_warden', 'throne_ashen'] }, name: 'The Black Gate' }),
 );
 

@@ -32,7 +32,7 @@ home screen for full-screen play).
 
 | Realm | Needs | Boss | Prize |
 |---|---|---|---|
-| The Grand Board (hub) | — | — | Ladder Vault pawn |
+| The Grand Board (hub) | — | — | Sacrifice Vault pawn |
 | Emerald Ranks (meadow) | — | Equus, the Horse Demigod | Knight |
 | Sunscorched Diagonals (desert) | Knight | Sethra, the Sand Bishop | Bishop |
 | Frostspire Keep (ice) | Bishop | Glacius, the Rook Colossus | Rook |
@@ -45,7 +45,8 @@ home screen for full-screen play).
 src/
   main.ts            game flow: title → explore ↔ duels / puzzles / chests / portals
   data/realms.ts     every realm as plain data: enemies, chests, doors, portals, props
-  data/puzzles.ts    door puzzles (mate in one; any mating move counts)
+  data/puzzles.ts    door puzzles: mate in 2–3 vs. best defence (any forced line counts)
+  chess/mateSolver.ts forced-mate solver (puzzle defence + data checks); runs in a worker
   data/themes.ts     per-realm colours, board skin, particles, music scale
   game/pieces.ts     piece kinds, wallet, pawn cap, hero forms and abilities
   game/army.ts       wallet → starting FEN (pawn-rank / back-rank rules)
@@ -68,8 +69,8 @@ public/engine/       Stockfish 19 lite single-threaded WASM (see STOCKFISH-LICEN
 - **A new enemy**: add an entry to a realm's `enemies` in `src/data/realms.ts`
   (`army` is what they field besides their king, `reward` is what you win).
 - **A new realm**: add a `RealmDef`, a theme in `themes.ts`, and a portal to it from the hub.
-- **A new puzzle**: add it to `puzzles.ts` and point a door at it.
-- Run `npm run check:data` — it proves every puzzle has a mate in one and every enemy's
+- **A new puzzle**: add it to `puzzles.ts` (FEN, `mateIn`, a first move as `solution`) and point a door at it.
+- Run `npm run check:data` — it proves every puzzle is a forced mate in exactly `mateIn` (no shortcut) and every enemy's
   starting position is legal chess. CI runs it before every deploy.
 
 ## Develop
@@ -87,7 +88,7 @@ Dev helpers in the browser console: `__pawn.game.s` is the live save
 
 ## Ideas for next steps
 
-- Mate-in-two puzzles (engine plays the defence) and a daily puzzle from the Lichess API
+- A daily puzzle from the Lichess API; mate-in-4 vaults (would need Stockfish as the solver)
 - Dungeon interiors as separate scenes; rook-charge to break cracked walls; bishop dash
 - Rematches with bonus rewards, a world map / fast travel between visited realms
 - Enemy piece-specific taunts during the duel; captured-piece animations in 3D

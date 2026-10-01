@@ -1,81 +1,82 @@
-// Chess puzzles that open locked doors. White (the hero) is always to move.
+// Chess puzzles that open locked doors. White (the hero) is always to move and
+// must force checkmate within `mateIn` moves while the enemy defends as well as
+// it can (see chess/mateSolver.ts). Any line that forces mate in time counts,
+// not just the one listed.
 //
-// goal 'mate1': any move that delivers checkmate solves it, so a puzzle can
-// never be "wrong" because it has two mates. `npm run check:data` proves every
-// puzzle here really has a mate in one.
+// `npm run check:data` proves every puzzle: legal position, a forced mate in
+// exactly `mateIn` (never fewer), and that `solution` really starts one.
 //
 // Keep this file free of imports so the Node check script can load it directly.
 
 export interface Puzzle {
   id: string;
   title: string;
+  /** Shown after two failed tries. */
   hint: string;
   fen: string;
-  goal: 'mate1';
+  mateIn: 1 | 2 | 3;
+  /** A first move that works, in SAN. Revealed only after several failures. */
+  solution: string;
 }
 
 export const PUZZLES: Record<string, Puzzle> = {
-  ladder: {
-    id: 'ladder',
-    title: 'The Rook Ladder',
-    hint: 'A rook on the edge of the board is a wall the king cannot cross.',
-    fen: 'k7/8/1K6/8/8/8/8/7R w - - 0 1',
-    goal: 'mate1',
+  // --- Mate in two -----------------------------------------------------------
+  deflection: {
+    id: 'deflection',
+    title: 'The Deflection',
+    hint: 'One black rook guards the whole back rank. Lure it away, even if it costs you.',
+    fen: '3r2k1/5ppp/8/8/4Q3/8/5PPP/4R1K1 w - - 0 1',
+    mateIn: 2,
+    solution: 'Qe8+',
   },
-  backrank: {
-    id: 'backrank',
-    title: 'The Hedge Gate',
-    hint: 'The king has hidden behind his own pawns. Too well.',
-    fen: '6k1/5ppp/8/8/8/8/5PPP/3R2K1 w - - 0 1',
-    goal: 'mate1',
+  philidor: {
+    id: 'philidor',
+    title: "Philidor's Legacy",
+    hint: 'Give up your queen so the enemy rook walls in its own king. Then a knight finishes it.',
+    fen: '4r2k/6pp/8/3Q2N1/2B5/8/5PPP/6K1 w - - 0 1',
+    mateIn: 2,
+    solution: 'Qg8+',
   },
-  smothered: {
-    id: 'smothered',
-    title: 'The Smothered King',
-    hint: 'Only one piece can jump over walls of its own army.',
-    fen: '6rk/6pp/8/6N1/8/8/8/6K1 w - - 0 1',
-    goal: 'mate1',
+  boden: {
+    id: 'boden',
+    title: "Boden's Crossfire",
+    hint: 'Two bishops on crossing diagonals can trap a castled king. Rip open its pawn shield first.',
+    fen: '2kr4/pp1n4/2n5/8/5B2/5Q2/5PPP/5BK1 w - - 0 1',
+    mateIn: 2,
+    solution: 'Qxc6+',
   },
-  arabian: {
-    id: 'arabian',
-    title: 'The Arabian Seal',
-    hint: 'Rook and knight together — an ancient desert pattern.',
-    fen: '7k/7p/5N2/8/8/8/8/6RK w - - 0 1',
-    goal: 'mate1',
+  lolli: {
+    id: 'lolli',
+    title: 'The Silent Threat',
+    hint: 'Not every winning move is a check. Your pawn on f6 already guards a deadly square.',
+    fen: '3r2k1/p2p1p1p/5Pp1/8/8/8/3Q1PPP/6K1 w - - 0 1',
+    mateIn: 2,
+    solution: 'Qh6',
   },
-  scholar: {
-    id: 'scholar',
-    title: "The Scholar's Door",
-    hint: 'The weakest square in the opening is next to the king.',
-    fen: 'r1bqkb1r/pppp1ppp/2n2n2/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 4 4',
-    goal: 'mate1',
+
+  // --- Mate in three ---------------------------------------------------------
+  anastasia: {
+    id: 'anastasia',
+    title: "Anastasia's Trap",
+    hint: 'A knight check drives the king into the corner. Then a queen sacrifice opens the h-file for your rook.',
+    fen: '5rk1/5ppp/8/3NR3/8/7Q/5PPP/6K1 w - - 0 1',
+    mateIn: 3,
+    solution: 'Ne7+',
   },
-  queenkiss: {
-    id: 'queenkiss',
-    title: "The Queen's Kiss",
-    hint: 'Your king can guard the queen as she steps right up to theirs.',
-    fen: '7k/Q7/6K1/8/8/8/8/8 w - - 0 1',
-    goal: 'mate1',
-  },
-  corridor: {
-    id: 'corridor',
-    title: 'The Frozen Corridor',
-    hint: 'The king is trapped in a hallway of ice. Close the door.',
-    fen: '1k6/ppp5/8/8/8/8/5PPP/4R1K1 w - - 0 1',
-    goal: 'mate1',
-  },
-  bishops: {
-    id: 'bishops',
-    title: 'Crossed Diagonals',
-    hint: 'Two bishops can cover a whole corner between them.',
-    fen: 'k7/8/1K6/4B3/8/8/8/5B2 w - - 0 1',
-    goal: 'mate1',
-  },
-  mirror: {
-    id: 'mirror',
+  pillsbury: {
+    id: 'pillsbury',
     title: 'The Mirror Vault',
-    hint: 'A queen guarded by a bishop can walk right up to the king.',
-    fen: 'r4rk1/ppp2pp1/8/7Q/8/3B4/5PPP/6K1 w - - 0 1',
-    goal: 'mate1',
+    hint: 'Smash the g-pawn with a rook. Your bishop on the long diagonal is waiting for the king.',
+    fen: '5rk1/5ppp/8/8/8/6R1/1B3P1P/5R1K w - - 0 1',
+    mateIn: 3,
+    solution: 'Rxg7+',
+  },
+  damiano: {
+    id: 'damiano',
+    title: "Damiano's Gambit",
+    hint: 'Your pawn on g6 guards h7. Sacrifice a rook to drag the king into the corner, then bring the queen down the h-file.',
+    fen: '5rk1/5pp1/4p1P1/8/8/7R/5PPP/3Q2K1 w - - 0 1',
+    mateIn: 3,
+    solution: 'Rh8+',
   },
 };

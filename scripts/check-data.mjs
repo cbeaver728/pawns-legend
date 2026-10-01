@@ -1,7 +1,8 @@
 // Sanity checks for the game data. Run: npm run check:data
 // (Node 22.6+ loads the .ts data files directly by stripping their types.)
 //
-//  * every puzzle is a legal position with at least one mate in one
+//  * every puzzle forces mate in exactly mateIn moves (never fewer), and its
+//    listed solution really starts such a mate
 //  * every enemy's starting position is legal chess against the starting army
 //  * doors, portals and ids all point at things that exist
 import { Chess } from 'chess.js';
@@ -9,6 +10,7 @@ import { PUZZLES } from '../src/data/puzzles.ts';
 import { REALMS } from '../src/data/realms.ts';
 import { autoArrange, buildFen } from '../src/game/army.ts';
 import { STARTING_WALLET } from '../src/game/pieces.ts';
+import { everyReplyLoses, mateLength } from '../src/chess/mateSolver.ts';
 
 let failed = 0;
 const fail = (msg) => { console.error(`✗ ${msg}`); failed++; };
@@ -21,13 +23,20 @@ for (const p of Object.values(PUZZLES)) {
     fail(`${p.id}: bad FEN — ${e.message}`);
     continue;
   }
-  const mates = game.moves({ verbose: true }).filter((m) => {
-    const g = new Chess(p.fen);
-    g.move(m);
-    return g.isCheckmate();
-  });
-  if (game.turn() !== 'w' || mates.length === 0) fail(`${p.id}: no mate in one for white`);
-  else console.log(`✓ puzzle ${p.id}: ${mates.map((m) => m.san).join(', ')}`);
+  if (game.turn() !== 'w') { fail(`${p.id}: white must be to move`); continue; }
+  const len = mateLength(game, p.mateIn);
+  if (len !== p.mateIn) {
+    fail(`${p.id}: forced mate in ${len ?? `more than ${p.mateIn}`}, but labelled mate in ${p.mateIn}`);
+    continue;
+  }
+  let starts = false;
+  try {
+    game.move(p.solution);
+    starts = p.mateIn === 1 ? game.isCheckmate() : everyReplyLoses(game, p.mateIn - 1);
+    game.undo();
+  } catch { /* illegal solution move */ }
+  if (!starts) fail(`${p.id}: listed solution ${p.solution} does not force mate in ${p.mateIn}`);
+  else console.log(`✓ puzzle ${p.id}: mate in ${p.mateIn}, starts ${p.solution}`);
 }
 
 const hero = autoArrange(STARTING_WALLET);
