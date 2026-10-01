@@ -133,8 +133,8 @@ export function pauseMenu(realmName: string): Promise<MenuResult> {
       body.replaceChildren(
         el('div', { class: 'help' },
           el('h3', {}, 'Explore'),
-          el('p', {}, 'PC: WASD or arrow keys to move · drag the mouse or press Q / R to turn the camera · E to talk, open and challenge · Space to leap (once you are a Knight) · Esc for this menu.'),
-          el('p', {}, 'Phone: drag on the left half to move · drag on the right half to turn the camera · A to act · B to leap.'),
+          el('p', {}, 'PC: WASD or arrow keys to move · drag the mouse or press Q / R to turn the camera (C = camera mode: WASD aims the camera) · E to talk, open and challenge · Space to leap (once you are a Knight) · Esc for this menu.'),
+          el('p', {}, 'Phone: drag on the left half to move · drag on the right half to turn the camera · A to act · B to leap. Tap the camera button (above A) to make the joystick aim the camera instead — your piece stands still — and tap it again to walk.'),
           el('h3', {}, 'Duel'),
           el('p', {}, 'Every enemy fights with chess. You play White and move first. Checkmate them to capture the pieces they guard. Tap or drag a piece to move it.'),
           el('h3', {}, 'Grow your army'),

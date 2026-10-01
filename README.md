@@ -13,7 +13,8 @@ home screen for full-screen play).
 
 - **Explore** in 3D (Ocarina-of-Time-style follow camera). PC: WASD/arrows, drag or
   Q/R to turn the camera, E to act, Space to leap. Phone: left thumb = joystick,
-  right side = camera, A = act, B = leap.
+  right side = camera, A = act, B = leap. The camera button (above A) toggles camera mode:
+  the joystick then turns and tilts the view while your piece stands still (C on PC).
 - **Duel**: walking up to an enemy and pressing A opens a pre-battle screen showing
   both armies. You play White on a 2D board against the chess mind.
 - **Army rules**: pawns only stand on your 2nd rank (max 8). Every other piece stands

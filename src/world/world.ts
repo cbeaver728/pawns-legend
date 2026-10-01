@@ -110,6 +110,8 @@ export class World {
 
   private camYaw = 0;
   private camDist = 10;
+  /** Camera height angle: low = level with the hero, high = looking down. */
+  private camPitch = 0.44;
   private manualCamTimer = 0;
 
   private circles: Circle[] = [];
@@ -888,10 +890,14 @@ export class World {
     const inp = this.input;
     inp.poll(dt);
     const turn = inp.consumeTurn();
-    if (turn) {
+    const tilt = inp.consumeTilt();
+    if (turn || tilt) {
       this.camYaw += turn;
+      this.camPitch = Math.max(0.12, Math.min(1.2, this.camPitch + tilt));
       this.manualCamTimer = 2.5;
     }
+    // Hold off the auto-follow while aiming, and for a moment after.
+    if (inp.cameraMode) this.manualCamTimer = Math.max(this.manualCamTimer, 1.5);
     if (inp.consumeMenu()) this.events?.menu();
 
     // Movement relative to the camera.
@@ -1076,7 +1082,7 @@ export class World {
       this.camera.lookAt(0, 2, 0);
       return;
     }
-    const pitch = 0.44;
+    const pitch = this.camPitch;
     const dist = this.camDist;
     const target = tmpV.set(this.heroPos.x, this.heroY * 0.5 + 2.2, this.heroPos.z);
     const want = new THREE.Vector3(
