@@ -27,6 +27,10 @@ home screen for full-screen play).
   Rook → Starlit Court, Queen → Obsidian Throne. Boss arenas open once the realm's
   sentries are beaten. Locked doors open by solving a chess puzzle; chests hold pieces.
 - Progress saves automatically in the browser (localStorage).
+- A play clock runs from New Game until Morthos falls (paused in the pause menu, on the
+  title screen and while the app is closed). It stays off-screen: look it up in the pause
+  menu, on the title screen, or on the ending screen. Finished runs go into **Records**
+  (title screen / pause menu), which New Game never erases.
 
 ## Realms
 
@@ -51,6 +55,7 @@ src/
   game/pieces.ts     piece kinds, wallet, pawn cap, hero forms and abilities
   game/army.ts       wallet → starting FEN (pawn-rank / back-rank rules)
   game/state.ts      save data (localStorage)
+  game/timer.ts      play clock + Records of finished runs
   chess/engine.ts    Stockfish 19 in a Web Worker + difficulty profiles
   chess/fallbackAI.ts small alpha-beta mind if Stockfish can't load
   chess/board.ts     chessground board + chess.js rules + promotion picker

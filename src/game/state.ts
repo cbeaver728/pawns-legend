@@ -22,6 +22,10 @@ export interface SaveData {
   pos: { x: number; z: number } | null;
   arrangement?: Arrangement;
   stats: { wins: number; losses: number; draws: number; puzzles: number };
+  /** Play time in ms since New Game (see game/timer.ts). */
+  playMs: number;
+  /** Final play time once Morthos is beaten; the clock stops there. */
+  clearedMs: number | null;
   settings: { music: boolean; sfx: boolean };
   createdAt: number;
 }
@@ -40,6 +44,8 @@ export function newSave(difficulty: Difficulty): SaveData {
     realm: 'hub',
     pos: null,
     stats: { wins: 0, losses: 0, draws: 0, puzzles: 0 },
+    playMs: 0,
+    clearedMs: null,
     settings: { music: true, sfx: true },
     createdAt: Date.now(),
   };

@@ -10,6 +10,7 @@ import { REALMS, type PortalDef, type RealmId } from './data/realms.ts';
 import { THEMES } from './data/themes.ts';
 import { addToWallet, currentForm, describePieces, PIECE_NAMES, type Wallet } from './game/pieces.ts';
 import { game, loadSave, newSave } from './game/state.ts';
+import { finishRun, setClockPaused, setClockRunning } from './game/timer.ts';
 import { fadeThrough } from './ui/dom.ts';
 import { Hud, say, showReward } from './ui/hud.ts';
 import { endingScreen, pauseMenu, titleScreen } from './ui/menus.ts';
@@ -147,7 +148,7 @@ async function interact(t: Interactable) {
             await grant(`You captured ${describePieces(t.def.reward)}!`, t.def.reward, `${t.def.name.split(',')[0]} is defeated.`);
           }
           if (world.refreshDoors()) hud.toast('Somewhere, a sealed gate crumbles…', 3200);
-          if (t.def.final) await endingScreen();
+          if (t.def.final) await endingScreen(finishRun());
         } else {
           world.stepBackFrom(t.def.id);
           if (result === 'fled') hud.toast('You slip away… for now.');
@@ -192,13 +193,16 @@ hud.onPromptTap = () => world.input.pressAction();
 async function openMenu() {
   if (busy || world.mode !== 'play') return;
   let quit = false;
+  setClockPaused(true);
   await modal(async () => {
     quit = (await pauseMenu(world.realm.name)) === 'quit';
   });
+  setClockPaused(false);
   if (quit) await toTitle();
 }
 
 async function toTitle() {
+  setClockRunning(false);
   savePosition();
   world.setMode('title');
   hud.show(false);
@@ -213,6 +217,7 @@ async function start(save: ReturnType<typeof newSave>) {
   const isNew = save.stats.wins === 0 && save.opened.length === 0 && !save.pos;
   game.save = save;
   game.persist();
+  setClockRunning(true);
   setSound(save.settings);
   await fadeThrough(() => {
     world.load((save.realm as RealmId) in REALMS ? (save.realm as RealmId) : 'hub', { pos: save.pos });

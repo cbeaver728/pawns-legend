@@ -5,6 +5,7 @@ import { chessMind, MINDS } from '../chess/engine.ts';
 import { resolveArrangement } from '../game/army.ts';
 import { describePieces, MAX_BACK_RANK, MAX_PAWNS } from '../game/pieces.ts';
 import { game, type Difficulty, type SaveData } from '../game/state.ts';
+import { formatTime, loadRecords, playTime } from '../game/timer.ts';
 import { button, el, screen } from './dom.ts';
 import { formationEditor } from './formation.ts';
 import { pieceIcon } from './icons.ts';
@@ -26,10 +27,12 @@ export function titleScreen(existing: SaveData | null): Promise<TitleChoice> {
       menu.replaceChildren();
       if (existing) {
         const w = existing.wallet;
-        menu.append(button(el('span', {}, 'Continue', el('small', {}, `${MINDS[existing.difficulty].label} · ${describePieces(w)}`)),
+        const clock = existing.clearedMs !== null ? `cleared in ${formatTime(existing.clearedMs)}` : `${formatTime(existing.playMs)} played`;
+        menu.append(button(el('span', {}, 'Continue', el('small', {}, `${MINDS[existing.difficulty].label} · ${describePieces(w)} · ${clock}`)),
           () => { sfx('confirm'); done({ kind: 'continue' }); }, 'btn primary big'));
       }
       menu.append(button('New Game', () => { sfx('select'); pickDifficulty(); }, existing ? 'btn big' : 'btn primary big'));
+      if (loadRecords().length) menu.append(button('Records', () => { sfx('select'); menu.replaceChildren(recordsView(main)); }, 'btn ghost'));
     };
 
     const pickDifficulty = () => {
@@ -67,10 +70,16 @@ export function pauseMenu(realmName: string): Promise<MenuResult> {
 
     const main = () => {
       body.replaceChildren(
+        el('div', { class: 'clock-card' },
+          el('span', { class: 'clock-label' }, s.clearedMs !== null ? 'Cleared in' : 'Play time'),
+          el('span', { class: 'clock-time' }, formatTime(playTime())),
+          el('span', { class: 'clock-note' }, s.clearedMs !== null ? 'The clock stopped when Morthos fell.' : 'Paused while this menu is open.'),
+        ),
         button('Resume', () => { sfx('confirm'); close('resume'); }, 'btn primary'),
         button('Your Army', () => { sfx('select'); army(); }, 'btn'),
         button('Settings', () => { sfx('select'); settings(); }, 'btn'),
         button('How to Play', () => { sfx('select'); help(); }, 'btn'),
+        button('Records', () => { sfx('select'); body.replaceChildren(recordsView(main)); }, 'btn'),
         button('Save & Quit to Title', () => { sfx('back'); game.persist(); close('quit'); }, 'btn ghost'),
         el('div', { class: 'pause-stats' },
           `Duels won ${s.stats.wins} · lost ${s.stats.losses} · drawn ${s.stats.draws} · puzzles solved ${s.stats.puzzles}`),
@@ -145,13 +154,20 @@ export function pauseMenu(realmName: string): Promise<MenuResult> {
   });
 }
 
-export function endingScreen(): Promise<void> {
+export function endingScreen(run: { ms: number; rank: number; ofDifficulty: number }): Promise<void> {
   const s = game.s;
   return new Promise((resolve) => {
     const scr = screen('ending');
     scr.append(el('div', { class: 'ending-card' },
       el('div', { class: 'logo-pieces' }, pieceIcon('k')),
       el('h1', {}, 'The Board Is Whole'),
+      el('div', { class: 'ending-time' },
+        el('span', {}, 'Completed in'),
+        el('b', {}, formatTime(run.ms)),
+        el('small', {}, run.rank === 1
+          ? (run.ofDifficulty > 1 ? `New best ${MINDS[s.difficulty].label} time!` : `Your first ${MINDS[s.difficulty].label} clear!`)
+          : `#${run.rank} of ${run.ofDifficulty} ${MINDS[s.difficulty].label} runs`),
+      ),
       el('p', {}, 'Morthos has fallen. The sixty-four realms knit back together, square by square, and a humble pawn stands where a king once ruled.'),
       el('p', { class: 'ending-stats' },
         `${MINDS[s.difficulty].label} · ${s.stats.wins} duels won · ${s.stats.puzzles} puzzles solved · army: ${describePieces(s.wallet)}`),
@@ -159,4 +175,28 @@ export function endingScreen(): Promise<void> {
       button('Keep Exploring', () => { sfx('confirm'); scr.remove(); resolve(); }, 'btn primary big'),
     ));
   });
+}
+
+/** Every finished run, fastest first. Records survive New Game. */
+function recordsView(back: () => void): HTMLElement {
+  const list = loadRecords();
+  const wrap = el('div', { class: 'records' }, el('h3', {}, 'Records'));
+  if (!list.length) {
+    wrap.append(el('p', { class: 'pause-note' }, 'No finished runs yet. Beat Morthos to set your first time.'));
+  } else {
+    const table = el('div', { class: 'records-list' });
+    const best: Partial<Record<Difficulty, number>> = {};
+    for (const r of list) best[r.difficulty] = Math.min(best[r.difficulty] ?? Infinity, r.ms);
+    list.forEach((r, i) => {
+      table.append(el('div', { class: `record ${best[r.difficulty] === r.ms ? 'best' : ''}` },
+        el('span', { class: 'record-rank' }, `${i + 1}`),
+        el('span', { class: 'record-time' }, formatTime(r.ms)),
+        el('span', { class: `record-mind mind-${r.difficulty}` }, MINDS[r.difficulty].label.replace(' Mind', '')),
+        el('span', { class: 'record-meta' }, `${new Date(r.date).toLocaleDateString()} · ${r.wins} duels · ${r.puzzles} puzzles`),
+      ));
+    });
+    wrap.append(table, el('p', { class: 'pause-note' }, 'Gold marks your best time on each difficulty.'));
+  }
+  wrap.append(button('Back', () => { sfx('back'); back(); }, 'btn ghost'));
+  return wrap;
 }
